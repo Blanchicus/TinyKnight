@@ -8,7 +8,8 @@ const JUMP_VELOCITY = -300.0
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var normalknightcollision: CollisionShape2D = $normalknightcollision
 @onready var tinyknightcollision: CollisionShape2D = $tinyknightcollision
-var knightstate = 0
+var knightstate = 0 # turn this into an enum to keep track of states
+# for better readability + more states. Look into state machine.
 
 
 func _physics_process(delta: float) -> void:
@@ -30,15 +31,16 @@ func _physics_process(delta: float) -> void:
 		animated_sprite.flip_h = true
 	
 	# Play animations in normal state (0)
-	if is_on_floor() && knightstate == 0:
-		if direction == 0:
+	if is_on_floor() and knightstate == 0 and animated_sprite.animation != "shrink":
+		if direction == 0 and animated_sprite.animation != "shrink":
 			animated_sprite.play("idle")
-		else:
+		elif animated_sprite.animation != "shrink":
 			animated_sprite.play("run")
-	elif !is_on_floor() && knightstate == 0:
+	elif !is_on_floor() and knightstate == 0 and animated_sprite.animation != "shrink":
 		animated_sprite.play("jump")
 	
 	# Play animations in shrink state (1)
+	
 	# Apply movement
 	if direction:
 		velocity.x = direction * SPEED
@@ -55,9 +57,19 @@ func _physics_process(delta: float) -> void:
 		elif knightstate == 1:
 			get_node("tinyknightcollision").disabled = true
 			get_node("normalknightcollision").disabled = false
+			if animated_sprite.is_playing():
+				return
 			animated_sprite.play_backwards("shrink")
 			knightstate = 0
-		
-		# time to implement a state machine!
+			
+	
+	if knightstate == 0:
+		if is_on_floor() and !animated_sprite.is_playing():
+			if direction == 0:
+				animated_sprite.play("idle")
+			else:
+				animated_sprite.play("run")
+	
+
 	move_and_slide()
 	
