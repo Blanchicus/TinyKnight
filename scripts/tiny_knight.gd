@@ -6,7 +6,6 @@ const JUMP_VELOCITY = -300.0
 
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var normalknightcollision: CollisionShape2D = $normalknightcollision
 @onready var tinyknightcollision: CollisionShape2D = $tinyknightcollision
 var knightstate = 0 # turn this into an enum to keep track of states
 # for better readability + more states. Look into state machine.
@@ -50,13 +49,12 @@ func _physics_process(delta: float) -> void:
 	# Shrink action
 	if Input.is_action_just_pressed("shrink"):
 		if knightstate == 0:
-			get_node("normalknightcollision").disabled = true
-			get_node("tinyknightcollision").disabled = false
-			animated_sprite.play("shrink")
+			tinyknightcollision.set_size(Vector2()) # NEED TO CHANGE HITBOX SIZE
+			animated_sprite.play("shrink") 
 			knightstate = 1
 		elif knightstate == 1:
-			get_node("tinyknightcollision").disabled = true
-			get_node("normalknightcollision").disabled = false
+			get_node("tinyknightcollision").disabled = true # Change hitbox
+			get_node("normalknightcollision").disabled = false # size here too
 			if animated_sprite.is_playing():
 				return
 			animated_sprite.play_backwards("shrink")
