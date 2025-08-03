@@ -4,10 +4,12 @@ extends CharacterBody2D
 const SPEED = 120.0
 const JUMP_VELOCITY = -300.0
 
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var normalknightcollision: CollisionShape2D = $normalknightcollision
 @onready var tinyknightcollision: CollisionShape2D = $tinyknightcollision
 var knightstate = 0
+
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -37,7 +39,6 @@ func _physics_process(delta: float) -> void:
 		animated_sprite.play("jump")
 	
 	# Play animations in shrink state (1)
-	
 	# Apply movement
 	if direction:
 		velocity.x = direction * SPEED
@@ -50,16 +51,13 @@ func _physics_process(delta: float) -> void:
 			get_node("normalknightcollision").disabled = true
 			get_node("tinyknightcollision").disabled = false
 			animated_sprite.play("shrink")
-			# Something here to set knightstate to 1
-			# WHEN ANIMATION IS FINISHED
-			
+			knightstate = 1
 		elif knightstate == 1:
 			get_node("tinyknightcollision").disabled = true
 			get_node("normalknightcollision").disabled = false
 			animated_sprite.play_backwards("shrink")
-			# Something here to set knightstate back to 0 
-			# WHEN ANIMATION IS FINISHED
-			
+			knightstate = 0
 		
+		# time to implement a state machine!
 	move_and_slide()
 	
